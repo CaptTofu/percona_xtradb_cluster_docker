@@ -32,7 +32,8 @@ RUN { \
 
 VOLUME /var/lib/mysql
 
-COPY my.cnf.tmpl /tmp/my.cnf.tmpl
+COPY my.cnf /etc/mysql/my.cnf
+COPY cluster.cnf /tmp/cluster.cnf
 # need random.sh because otherwise, ENV $RANDOM is not set
 COPY random.sh /tmp/random.sh
 RUN /tmp/random.sh
@@ -40,5 +41,5 @@ RUN /tmp/random.sh
 COPY docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
-EXPOSE 3306
-CMD ["mysqld"]
+EXPOSE 3306 4444 4567 4568
+#CMD ["mysqld"]

@@ -44,7 +44,25 @@ if [ "$1" = 'mysqld' ]; then
 				echo "GRANT ALL ON \`$MYSQL_DATABASE\`.* TO '$MYSQL_USER'@'%' ;" >> "$tempSqlFile"
 			fi
 		fi
- 
+
+		if [ -n "$GALERA_CLUSTER" -a "$GALERA_CLUSTER" == 'yes' ]; then
+			WSREP_SST_USER=${WSREP_SST_USER:-"sst"}
+			if [ -z "$WSREP_SST_PASSWORD" ]; then
+				echo >&2 'error: database is uninitialized and WSREP_SST_PASSWORD not set'
+				echo >&2 '  Did you forget to add -e WSREP_SST_PASSWORD=xxx ?'
+				exit 1
+			fi
+
+			cp /tmp/cluster.cnf /etc/mysql/conf.d/cluster.cnf
+
+                        sed -i -e "s|wsrep_sst_auth \= \"sstuser:changethis\"|wsrep_sst_auth = ${WSREP_SST_USER}:${WSREP_SST_PASSWORD}|" /etc/mysql/conf.d/cluster.cnf
+
+			if [ -n "$WSREP_CLUSTER_ADDRESS" ]; then
+                                sed -i -e "s|wsrep_cluster_address \= gcomm://|wsrep_cluster_address = ${WSREP_CLUSTER_ADDRESS}|" /etc/mysql/conf.d/cluster.cnf
+			fi 
+			echo "CREATE USER '${WSREP_SST_USER}'@'localhost' IDENTIFIED BY '${WSREP_SST_PASSWORD}';" >> "$tempSqlFile"
+                        echo "GRANT RELOAD, LOCK TABLES, REPLICATION CLIENT ON *.* TO '${WSREP_SST_USER}'@'localhost';" >> "$tempSqlFile"
+		fi
 		echo 'FLUSH PRIVILEGES ;' >> "$tempSqlFile"
 		
 		set -- "$@" --init-file="$tempSqlFile"

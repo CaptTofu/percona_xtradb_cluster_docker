@@ -1,3 +1,3 @@
 #!/bin/bash
 
-sed "s/SERVER_ID/${RANDOM}/g" /tmp/my.cnf.tmpl > /etc/mysql/my.cnf
+sed -i -e "s/^server\-id\s*\=\s.*$/server-id = ${RANDOM}/" /etc/mysql/my.cnf
