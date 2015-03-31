@@ -5,8 +5,8 @@ wsrep_cluster_address = gcomm://
 binlog_format = ROW
 default_storage_engine = InnoDB
 innodb_autoinc_lock_mode = 2
-#wsrep_node_address = 192.168.70.61
+#wsrep_node_address = 127.0.0.1 
 
-wsrep_sst_method = xtrabackup
+wsrep_sst_method = xtrabackup-v2
 wsrep_cluster_name = galera_kubernetes
 wsrep_sst_auth = "sstuser:changethis"

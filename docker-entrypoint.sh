@@ -57,10 +57,18 @@ if [ "$1" = 'mysqld' ]; then
 
                         sed -i -e "s|wsrep_sst_auth \= \"sstuser:changethis\"|wsrep_sst_auth = ${WSREP_SST_USER}:${WSREP_SST_PASSWORD}|" /etc/mysql/conf.d/cluster.cnf
 
-			if [ -n "$WSREP_CLUSTER_ADDRESS" ]; then
+ 			WSREP_NODE_ADDRESS=`ip addr show | grep -E '^[ ]*inet' | grep -m1 global | awk '{ print $2 }' | sed -e 's/\/.*//'`
+			if [ -n "$WSREP_NODE_ADDRESS" ]; then
+                                sed -i -e "s|^#wsrep_node_address \= .*$|wsrep_node_address = ${WSREP_NODE_ADDRESS}|" /etc/mysql/conf.d/cluster.cnf
+				if [ -n "$WSREP_CLUSTER_ADDRESS"  -a "$WSREP_CLUSTER_ADDRESS" != "gcomm://" ]; then
+					WSREP_CLUSTER_ADDRESS="${WSREP_CLUSTER_ADDRESS},${WSREP_NODE_ADDRESS}"
+				fi
+			fi
+			if [ -n "$WSREP_CLUSTER_ADDRESS" -a "$WSREP_CLUSTER_ADDRESS" != "gcomm://" ]; then
                                 sed -i -e "s|wsrep_cluster_address \= gcomm://|wsrep_cluster_address = ${WSREP_CLUSTER_ADDRESS}|" /etc/mysql/conf.d/cluster.cnf
 			fi 
- 			WSREP_NODE_ADDRESS=`ip addr show | grep -E '^[ ]*inet' | grep -m1 global | awk '{ print $2 }' | sed -e 's/\/.*//'`
+
+			
 			echo "CREATE USER '${WSREP_SST_USER}'@'localhost' IDENTIFIED BY '${WSREP_SST_PASSWORD}';" >> "$tempSqlFile"
                         echo "GRANT RELOAD, LOCK TABLES, REPLICATION CLIENT ON *.* TO '${WSREP_SST_USER}'@'localhost';" >> "$tempSqlFile"
 		fi
