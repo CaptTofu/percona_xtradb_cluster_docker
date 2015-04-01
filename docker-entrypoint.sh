@@ -45,7 +45,7 @@ if [ "$1" = 'mysqld' ]; then
 			fi
 		fi
 
-		if [ -n "$GALERA_CLUSTER" -a "$GALERA_CLUSTER" == 'yes' ]; then
+		if [ -n "$GALERA_CLUSTER" -a "$GALERA_CLUSTER" = true ]; then
 			WSREP_SST_USER=${WSREP_SST_USER:-"sst"}
 			if [ -z "$WSREP_SST_PASSWORD" ]; then
 				echo >&2 'error: database is uninitialized and WSREP_SST_PASSWORD not set'
