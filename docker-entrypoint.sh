@@ -65,11 +65,11 @@ EOSQL
                 fi
             fi
 
-	    # if kubernetes, take advantage of the metadata!
-            if [ -n "$KUBERNETES_RO_SERVICE_HOST" -a -e './kubectl' ]; then
+	    # if kubernetes, take advantage of the metadata, unless of course already set
+            if [ -n "$KUBERNETES_RO_SERVICE_HOST" -a -e './kubectl' -a -z "$WSREP_CLUSTER_ADDRESS" ]; then
                 WSREP_CLUSTER_ADDRESS=gcomm://
                 for node in 1 2 3; do
-                    WSREP_NODE=`kubectl --server=${KUBERNETES_RO_SERVICE_HOST}:${KUBERNETES_RO_PORT_80_TCP_PORT} get pods| grep -v IP | tr -d '\n' | grep "pxc-node${node}"| awk '{ print $2 }'`
+                    WSREP_NODE=`./kubectl --server=${KUBERNETES_RO_SERVICE_HOST}:${KUBERNETES_RO_SERVICE_PORT} get pods| grep "^pxc-node${node}" | tr -d '\n' | awk '{ print $2 }'`
                     if [ ! -z $WSREP_NODE ]; then
                         if [ $node -gt 1 -a $node != "" ]; then
                             WSREP_NODE=",${WSREP_NODE}"
