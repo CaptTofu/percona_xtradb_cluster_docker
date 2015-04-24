@@ -64,7 +64,20 @@ EOSQL
                     WSREP_CLUSTER_ADDRESS="${WSREP_CLUSTER_ADDRESS},${WSREP_NODE_ADDRESS}"
                 fi
             fi
-
+ 	    # CoreOS, using fleet
+            if [ -n "$FLEETCTL_ENDPOINT" -a -e './etcdctl' -a -z "$WSREP_CLUSTER_ADDRESS" ]; then
+                WSREP_CLUSTER_ADDRESS=""
+                for key in $(./etcdctl --peers=${FLEETCTL_ENDPOINT} ls /galera/|| true); do
+                    WSREP_NODE=$(./etcdctl --peers=${FLEETCTL_ENDPOINT} get ${key} || true)
+                    if [ "$WSREP_CLUSTER_ADDRESS" != '' ]; then
+                        WSREP_CLUSTER_ADDRESS=$WSREP_CLUSTER_ADDRESS,${WSREP_NODE}
+                    else
+                        WSREP_CLUSTER_ADDRESS=${WSREP_NODE}
+                    fi
+                done
+                WSREP_CLUSTER_ADDRESS=gcomm://${WSREP_CLUSTER_ADDRESS}
+            fi
+            # Kubernetes
 	    # if kubernetes, take advantage of the metadata, unless of course already set
             if [ -n "$KUBERNETES_RO_SERVICE_HOST" -a -e './kubectl' -a -z "$WSREP_CLUSTER_ADDRESS" ]; then
                 WSREP_CLUSTER_ADDRESS=gcomm://

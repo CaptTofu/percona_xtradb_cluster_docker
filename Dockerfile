@@ -33,6 +33,7 @@ RUN { \
 VOLUME /var/lib/mysql
 
 COPY kubectl /kubectl
+COPY etcdctl /etcdctl
 RUN chmod +x /kubectl
 COPY my.cnf /etc/mysql/my.cnf
 COPY cluster.cnf /tmp/cluster.cnf
