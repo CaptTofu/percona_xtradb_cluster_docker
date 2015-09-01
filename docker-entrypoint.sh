@@ -45,6 +45,27 @@ EOSQL
             fi
         fi
 
+        # TODO:
+        # new stuff - this is clunky, yes, and needs to be made dynamic
+        # need copy build docker container with kubectl and use kubernetes
+        # local API to get list of however many nodes are in the cluster
+        # If not set, or user has specified from the pod/rc file to set this,
+        # then get clever
+        if [ -z "$WSREP_CLUSTER_ADDRESS" -o "$WSREP_CLUSTER_ADDRESS" == "gcomm://" ]; then
+          if [ -z "$WSREP_CLUSTER_ADDRESS" ]; then
+            $WSREP_CLUSTER_ADDRESS='gcomm://'
+          endif
+          if [ -n "PXC_NODE1_SERVICE_HOST" ]; then
+            WSREP_CLUSTER_ADDRESS="${WSREP_CLUSTER_ADDRESS}://${PXC_NODE1_SERVICE_HOST}
+          fi
+          if [ -n "PXC_NODE2_SERVICE_HOST" ]; then
+            WSREP_CLUSTER_ADDRESS="${WSREP_CLUSTER_ADDRESS},${PXC_NODE2_SERVICE_HOST}
+          fi
+          if [ -n "PXC_NODE3_SERVICE_HOST" ]; then
+            WSREP_CLUSTER_ADDRESS="${WSREP_CLUSTER_ADDRESS},${PXC_NODE3_SERVICE_HOST}
+          fi
+        endif
+
         if [ -n "$GALERA_CLUSTER" -a "$GALERA_CLUSTER" = true ]; then
             WSREP_SST_USER=${WSREP_SST_USER:-"sst"}
             if [ -z "$WSREP_SST_PASSWORD" ]; then
@@ -66,6 +87,7 @@ EOSQL
             fi
 
 	    # if kubernetes, take advantage of the metadata, unless of course already set
+	    # DEPRECATED: KUBERNETES_RO_SERVICE_HOST removed from v1. 
             if [ -n "$KUBERNETES_RO_SERVICE_HOST" -a -e './kubectl' -a -z "$WSREP_CLUSTER_ADDRESS" ]; then
                 WSREP_CLUSTER_ADDRESS=gcomm://
                 for node in 1 2 3; do
