@@ -2,7 +2,7 @@
 
 #
 # 
-# Copyright [yyyy] [name of copyright owner]
+# Copyright 2015 Patrick Galbraith 
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+#
+# 
 # I am not particularly fond of this script as I would prefer 
 # using confd to do this ugly work. Confd functionality is being
 # built into kubernetes as I write this which may replace this
