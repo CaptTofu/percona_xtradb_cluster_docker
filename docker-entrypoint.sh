@@ -121,14 +121,20 @@ EOSQL
         if [ -z "$WSREP_CLUSTER_ADDRESS" ]; then
           WSREP_CLUSTER_ADDRESS="gcomm://"
         fi 
-        if [ -n "$PXC_NODE1_SERVICE_HOST" -a "$HOSTNAME" != "pxc-node1" ]; then
-          WSREP_CLUSTER_ADDRESS="${WSREP_CLUSTER_ADDRESS}${PXC_NODE1_SERVICE_HOST}"
+        if [ -n "$PXC_NODE1_SERVICE_HOST" ]; then
+          if [ $(expr "$HOSTNAME" : 'pxc-node1') -eq 0 ]; then
+            WSREP_CLUSTER_ADDRESS="${WSREP_CLUSTER_ADDRESS}${PXC_NODE1_SERVICE_HOST}"
+          fi
         fi
-        if [ -n "$PXC_NODE2_SERVICE_HOST" -a "$HOSTNAME" != "pxc-node2" ]; then
-          WSREP_CLUSTER_ADDRESS="${WSREP_CLUSTER_ADDRESS},${PXC_NODE2_SERVICE_HOST}"
+        if [ -n "$PXC_NODE2_SERVICE_HOST" ]; then
+          if [ $(expr "$HOSTNAME" : 'pxc-node2') -eq 0 ]; then
+            WSREP_CLUSTER_ADDRESS="${WSREP_CLUSTER_ADDRESS},${PXC_NODE2_SERVICE_HOST}"
+          fi
         fi
-        if [ -n "$PXC_NODE3_SERVICE_HOST" -a "$HOSTNAME" != "pxc-node3" ]; then
-          WSREP_CLUSTER_ADDRESS="${WSREP_CLUSTER_ADDRESS},${PXC_NODE3_SERVICE_HOST}"
+        if [ -n "$PXC_NODE3_SERVICE_HOST" ]; then
+          if [ $(expr "$HOSTNAME" : 'pxc-node3') -eq 0 ]; then
+            WSREP_CLUSTER_ADDRESS="${WSREP_CLUSTER_ADDRESS},${PXC_NODE3_SERVICE_HOST}"
+          fi
         fi
       fi 
   

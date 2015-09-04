@@ -122,22 +122,19 @@ EOSQL
           WSREP_CLUSTER_ADDRESS="gcomm://"
         fi 
         if [ -n "$PXC_NODE1_SERVICE_HOST" ]; then
-          echo $HOSTNAME | grep -q "pxc-node1"
-          #if [ $? -eq 1 ]; then
+          if [ $(expr "$HOSTNAME" : 'pxc-node1') -eq 0 ]; then
             WSREP_CLUSTER_ADDRESS="${WSREP_CLUSTER_ADDRESS}${PXC_NODE1_SERVICE_HOST}"
-          #fi
+          fi
         fi
         if [ -n "$PXC_NODE2_SERVICE_HOST" ]; then
-          echo $HOSTNAME | grep -q "pxc-node2"
-          #if [ $? -eq 1 ]; then
+          if [ $(expr "$HOSTNAME" : 'pxc-node2') -eq 0 ]; then
             WSREP_CLUSTER_ADDRESS="${WSREP_CLUSTER_ADDRESS},${PXC_NODE2_SERVICE_HOST}"
-          #fi
+          fi
         fi
         if [ -n "$PXC_NODE3_SERVICE_HOST" ]; then
-          echo $HOSTNAME | grep -q "pxc-node3"
-          #if [ $? -eq 1 ]; then
+          if [ $(expr "$HOSTNAME" : 'pxc-node3') -eq 0 ]; then
             WSREP_CLUSTER_ADDRESS="${WSREP_CLUSTER_ADDRESS},${PXC_NODE3_SERVICE_HOST}"
-          #fi
+          fi
         fi
       fi 
   
