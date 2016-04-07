@@ -55,13 +55,20 @@ if [ "$1" = 'mysqld' ]; then
     # semicolons (no line breaks or comments are permitted).
     # TODO proper SQL escaping on ALL the things D:
 
+    # Only provision root user when password is set. This is to allow
+    # Galera to synch the mysql.user table from a bootstrap node.
     tempSqlFile='/tmp/mysql-first-time.sql'
-    cat > "$tempSqlFile" <<-EOSQL
+
+    echo "DROP DATABASE IF EXISTS test ;" >> "$tempSqlFile"
+
+    if [ ! -z "$MYSQL_ROOT_PASSWORD" ]; then
+	    cat >> "$tempSqlFile" <<-EOSQL
 DELETE FROM mysql.user ;
 CREATE USER 'root'@'%' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}' ;
 GRANT ALL ON *.* TO 'root'@'%' WITH GRANT OPTION ;
 DROP DATABASE IF EXISTS test ;
 EOSQL
+    fi
 
     if [ "$MYSQL_DATABASE" ]; then
       echo "CREATE DATABASE IF NOT EXISTS \`$MYSQL_DATABASE\` ;" >> "$tempSqlFile"
