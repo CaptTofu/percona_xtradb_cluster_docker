@@ -1,0 +1,4 @@
+[mysqld]
+general_log = 0
+log_error = /var/log/mysql/error.log
+log_warnings = 1
