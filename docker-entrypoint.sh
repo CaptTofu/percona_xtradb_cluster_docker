@@ -118,9 +118,9 @@ given_settings=($(env | sed -n -r "s/CNF_MYSQLD_([0-9A-Za-z_]*).*/\1/p"))
 if [ ${#given_settings[@]} -gt 0 ]; then
     echo "[mysqld]" > /etc/mysql/conf.d/custom.cfg
     for setting_key in "${given_settings[@]}"; do
-        key="SETTING_$setting_key"
+        key="CNF_MYSQLD_$setting_key"
         setting_var="${!key}"
-        echo "$key = $setting_var" >> /etc/mysql/conf.d/custom.cfg
+        echo "$setting_key = $setting_var" >> /etc/mysql/conf.d/custom.cfg
     done
 fi
 
